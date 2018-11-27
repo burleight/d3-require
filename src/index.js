@@ -69,7 +69,7 @@ export function requireFrom(resolver) {
       };
       script.async = true;
       script.src = url;
-      window.define = define;
+      window.d3define = d3define;
       document.head.appendChild(script);
     }));
     return module;
@@ -122,7 +122,7 @@ function isexports(name) {
   return (name + "") === "exports";
 }
 
-function define(name, dependencies, factory) {
+function d3define(name, dependencies, factory) {
   const n = arguments.length;
   if (n < 2) factory = name, dependencies = [];
   else if (n < 3) factory = dependencies, dependencies = typeof name === "string" ? [] : name;
@@ -141,4 +141,4 @@ function define(name, dependencies, factory) {
   });
 }
 
-define.amd = {};
+d3define.amd = {};
