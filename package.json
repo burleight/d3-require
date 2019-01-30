@@ -1,9 +1,9 @@
 {
   "name": "d3-require",
-  "version": "1.1.4-mod",
-  "description": "A minimal, promise-based implementation to require asynchronous module definitions.",
+  "version": "1.2.2-mod",
+  "description": "(renamed define method to d3define) A minimal, promise-based implementation to require asynchronous module definitions.",
   "author": {
-    "name": "Observable, Inc."
+    "name": "Tomas Burleigh"
   },
   "license": "ISC",
   "main": "dist/d3-require.js",

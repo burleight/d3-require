@@ -3,12 +3,27 @@ const queue = [];
 const map = queue.map;
 const some = queue.some;
 const hasOwnProperty = queue.hasOwnProperty;
-const origin = "https://unpkg.com/";
+const origin = "https://cdn.jsdelivr.net/npm/";
 const identifierRe = /^((?:@[^/@]+\/)?[^/@]+)(?:@([^/]+))?(?:\/(.*))?$/;
 const versionRe = /^\d+\.\d+\.\d+(-[\w-.+]+)?$/;
+const extensionRe = /\.[^/]*$/;
+const mains = ["unpkg", "jsdelivr", "browser", "main"];
 
-function string(value) {
-  return typeof value === "string" ? value : "";
+export class RequireError extends Error {
+  constructor(message) {
+    super(message);
+  }
+}
+
+RequireError.prototype.name = RequireError.name;
+
+function main(meta) {
+  for (const key of mains) {
+    const value = meta[key];
+    if (typeof value === "string") {
+      return extensionRe.test(value) ? value : `${value}.js`;
+    }
+  }
 }
 
 function parseIdentifier(identifier) {
@@ -24,7 +39,7 @@ function resolveMeta(target) {
   const url = `${origin}${target.name}${target.version ? `@${target.version}` : ""}/package.json`;
   let meta = metas.get(url);
   if (!meta) metas.set(url, meta = fetch(url).then(response => {
-    if (!response.ok) throw new Error("unable to load package.json");
+    if (!response.ok) throw new RequireError("unable to load package.json");
     if (response.redirected && !metas.has(response.url)) metas.set(response.url, meta);
     return response.json();
   }));
@@ -35,16 +50,17 @@ async function resolve(name, base) {
   if (name.startsWith(origin)) name = name.substring(origin.length);
   if (/^(\w+:)|\/\//i.test(name)) return name;
   if (/^[.]{0,2}\//i.test(name)) return new URL(name, base == null ? location : base).href;
-  if (!name.length || /^[\s._]/.test(name) || /\s$/.test(name)) throw new Error("illegal name");
+  if (!name.length || /^[\s._]/.test(name) || /\s$/.test(name)) throw new RequireError("illegal name");
   const target = parseIdentifier(name);
   if (!target) return `${origin}${name}`;
   if (!target.version && base != null && base.startsWith(origin)) {
     const meta = await resolveMeta(parseIdentifier(base.substring(origin.length)));
     target.version = meta.dependencies && meta.dependencies[target.name] || meta.peerDependencies && meta.peerDependencies[target.name];
   }
+  if (target.path && !extensionRe.test(target.path)) target.path += ".js";
   if (target.path && target.version && versionRe.test(target.version)) return `${origin}${target.name}@${target.version}/${target.path}`;
   const meta = await resolveMeta(target);
-  return `${origin}${meta.name}@${meta.version}/${target.path || string(meta.unpkg) || string(meta.browser) || string(meta.main) || "index.js"}`;
+  return `${origin}${meta.name}@${meta.version}/${target.path || main(meta) || "index.js"}`;
 }
 
 export const require = requireFrom(resolve);
@@ -60,11 +76,11 @@ export function requireFrom(resolver) {
       const script = document.createElement("script");
       script.onload = () => {
         try { resolve(queue.pop()(requireRelative(url))); }
-        catch (error) { reject(new Error("invalid module")); }
+        catch (error) { reject(new RequireError("invalid module")); }
         script.remove();
       };
       script.onerror = () => {
-        reject(new Error("unable to load module"));
+        reject(new RequireError("unable to load module"));
         script.remove();
       };
       script.async = true;

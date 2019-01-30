@@ -8,7 +8,7 @@ A minimal, promise-based implementation to require [asynchronous module definiti
 
 * Named module definitions (*e.g.*, jQuery) are treated as anonymous modules.
 
-By default, [d3.require](#require) loads modules from [unpkg](https://unpkg.com/); the module *name* can be any package (or scoped package) name optionally followed by the at sign (@) and a semver range. For example, `d3.require("d3@5")` loads the highest version of [D3](https://d3js.org) 5.x. Relative paths and absolute URLs are also supported. You can change this behavior using [d3.requireFrom](#requireFrom).
+By default, [d3.require](#require) loads modules from [jsDelivr](https://jsdelivr.com/); the module *name* can be any package (or scoped package) name optionally followed by the at sign (@) and a semver range. For example, `d3.require("d3@5")` loads the highest version of [D3](https://d3js.org) 5.x. Relative paths and absolute URLs are also supported. You can change this behavior using [d3.requireFrom](#requireFrom).
 
 ## Installing
 
@@ -91,3 +91,7 @@ myRequire("semiotic").then(Semiotic => {
   console.log(Semiotic);
 });
 ```
+
+<a href="#RequireError" name="RequireError">#</a> d3.<b>RequireError</b>
+
+The class of error that may be thrown by require.
