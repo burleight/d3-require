@@ -1,6 +1,6 @@
 {
   "name": "d3-require",
-  "version": "1.1.4",
+  "version": "1.1.4-mod",
   "description": "A minimal, promise-based implementation to require asynchronous module definitions.",
   "author": {
     "name": "Observable, Inc."
@@ -11,7 +11,7 @@
   "module": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/d3/d3-require.git"
+    "url": "https://github.com/burleight/d3-require.git"
   },
   "scripts": {
     "pretest": "rollup -c",
